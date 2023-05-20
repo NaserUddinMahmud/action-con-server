@@ -31,12 +31,14 @@ async function run() {
     const toysCollection = client.db('actionCon').collection('toys');
 
     app.get('/toys', async(req, res) =>{
+        console.log(req.query);
+        const limit = 20
         const cursor = toysCollection.find();
-        const result = await cursor.toArray();
+        const result = await cursor.limit(limit).toArray();
         res.send(result);
     }) 
 
-    app.post('/toys', async(req, res) =>{
+    app.post('/addAToy', async(req, res) =>{
         const newToy = req.body;
         console.log(newToy);
         const result = await toysCollection.insertOne(newToy);
