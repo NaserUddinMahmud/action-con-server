@@ -31,8 +31,11 @@ async function run() {
     const toysCollection = client.db('actionCon').collection('toys');
 
     app.get('/toys', async(req, res) =>{
-        const limit = 20
-        const cursor = toysCollection.find();
+      const limit = 20;
+      const search = req.query.search;
+      // console.log(limit,search);
+      const query = {toyName: {$regex: search, $options: 'i'}}
+        const cursor = toysCollection.find(query);
         const result = await cursor.limit(limit).toArray();
         res.send(result);
     }) 
