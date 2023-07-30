@@ -6,7 +6,14 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors())
+
+const corsOptions ={
+  origin:'*', 
+  credentials:true,
+  optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions))
 app.use(express.json());
 
 
@@ -25,18 +32,27 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    client.connect((error)=>{
+    if(error){
+      console.log(error)
+      return;
+    }
+  });
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
     const toysCollection = client.db('actionCon').collection('toys');
 
     app.get('/toys', async(req, res) =>{
-      const limit = 20;
+      // const limit = 20;
+      let query ={}
       const search = req.query.search;
-      // console.log(limit,search);
-      const query = {toyName: {$regex: search, $options: 'i'}}
-        const cursor = toysCollection.find(query);
-        const result = await cursor.limit(limit).toArray();
+      console.log(search);
+      if(search){
+        query = {toyName: {$regex: search, $options: 'i'}}
+      }
+
+        const result = await toysCollection.find(query).toArray();
         res.send(result);
     }) 
 
